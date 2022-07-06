@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class User(AbstractUser):
     balance = models.IntegerField(default=0, verbose_name="Баланс")
@@ -25,4 +26,10 @@ class Point(models.Model):
         db_table = "point"
         verbose_name = "Балл"
         verbose_name_plural = "Баллы"
-        
+
+
+
+@receiver(post_save, sender=User)
+def create_connected_models(sender, instance, created, **kwargs):
+    if created:
+        Point.objects.create(user=instance)
