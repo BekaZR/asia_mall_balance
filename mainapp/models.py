@@ -1,7 +1,9 @@
+import re
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+
 
 class User(AbstractUser):
     balance = models.IntegerField(default=0, verbose_name="Баланс")
@@ -16,7 +18,7 @@ class User(AbstractUser):
 class Point(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, 
-        primary_key=True, related_name='user_point', 
+        related_name='user_point', 
         verbose_name="Пользователь", 
         )
     click_count = models.SmallIntegerField(default=1, verbose_name="Счет нажатий")
@@ -26,7 +28,23 @@ class Point(models.Model):
         db_table = "point"
         verbose_name = "Балл"
         verbose_name_plural = "Баллы"
-
+    
+    @property
+    def default_value_click_count(self):
+        self.click_count = 1
+        return self.save()
+    
+    @property
+    def add_click_count_from_instance(self):
+        self.click_count += 1
+        return self.save()
+    
+    @property
+    def add_from_user_balance(self):
+        self.user.balance += self.click_count
+        return self.user.save()
+    
+    
 
 
 @receiver(post_save, sender=User)

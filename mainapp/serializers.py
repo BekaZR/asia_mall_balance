@@ -14,7 +14,6 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             "password": {"write_only":True}
         }
-        
 
 
 class PointSerializer(serializers.ModelSerializer):
@@ -23,27 +22,21 @@ class PointSerializer(serializers.ModelSerializer):
         fields = ("id", "user", "click_count", "last_click_date")
         read_only_fields = ("user",)
     
+    
     def update(self, instance, validated_data):
-        
         if date.today() - instance.last_click_date == timedelta(days=1):
             if instance.click_count == 10:
-                instance.user.balance += instance.click_count
-                instance.click_count = 1
-                instance.user.save()
-                instance.save()
+                instance.add_from_user_balance
+                instance.default_value_click_count
                 return instance
             
-            instance.user.balance += instance.click_count
-            instance.click_count += 1
-            instance.user.save()
-            instance.save()
+            instance.add_from_user_balance
+            instance.add_click_count_from_instance
             return instance
         
         elif date.today() - instance.last_click_date == timedelta(days=0):
             return instance
         
-        instance.click_count = 1
-        instance.user.balance += instance.click_count
-        instance.user.save()
-        instance.save()
+        instance.default_value_click_count
+        instance.add_from_user_balance
         return instance
