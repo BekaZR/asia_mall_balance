@@ -35,7 +35,7 @@ class PointSerializer(serializers.ModelSerializer):
             return instance
         
         elif date.today() - instance.last_click_date == timedelta(days=0):
-            return instance
+            raise serializers.ValidationError({"Wrong date":"You can't get a point twice in a day"})
         
         instance.default_value_click_count
         instance.add_from_user_balance
