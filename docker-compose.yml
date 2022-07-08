@@ -13,7 +13,7 @@ services:
       - ./.env
 
   web:
-    container_name: web_besplatno
+    container_name: web_asia_mall
     restart: unless-stopped
     build:
       context: .
